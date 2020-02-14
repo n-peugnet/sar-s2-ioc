@@ -1,1 +1,6 @@
+# Compiled files
+*.x
+
+
+# IDE files
 .vscode

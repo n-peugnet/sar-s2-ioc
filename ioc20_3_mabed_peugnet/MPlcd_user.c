@@ -142,6 +142,14 @@ void gpio_write(int gpio, int value)
  * LCD's Operations
  ******************************************************************************/
 
+/* Global vars */
+
+// colum
+int X;
+
+// line
+int Y;
+
 /* generate E signal */
 void lcd_strobe(void)
 {
@@ -183,6 +191,12 @@ void lcd_data(int character)
     usleep(1);
 }
 
+void lcd_set_cursor(int x, int y)
+{
+    X = x;
+    Y = y;
+}
+
 /* initialization : pour comprendre la séquence, il faut regarder le cours */
 // Q4: Expliquer le rôle des masques : LCD_FUNCTIONSET, LCD_FS_4BITMODE, etc.
 void lcd_init(void)
@@ -206,11 +220,12 @@ void lcd_message(const char *txt)
 {
     int a[] = { 0, 0x40, 0x14, 0x54 };
     int len = 20;
-    int i, l;
+    int i = 0;
 
-    for (i = 0, l = 0; (l < 4) && (i < strlen(txt)); l++) {
-        lcd_command(LCD_SETDDRAMADDR + a[l]);
-        for (; (i < (l + 1) * len) && (i < strlen(txt)); i++) {
+    for (; (Y < 4) && (i < strlen(txt)); Y++, X=0) {
+        printf("Y=%d X=%d\n", Y, X);
+        lcd_command(LCD_SETDDRAMADDR + a[Y] + X);
+        for (; (X < len) && (i < (Y + 1) * len) && (i < strlen(txt)); i++, X++) {
             lcd_data(txt[i]);
         }
     }
@@ -226,6 +241,8 @@ int main(int argc, char **argv)
         fprintf(stderr, "ERROR: must take a string as argument\n");
         exit(1);
     }
+
+    // utiliser getopt
 
     /* Retreive the mapped GPIO memory */
     if (gpio_setup() == -1) {
@@ -246,7 +263,10 @@ int main(int argc, char **argv)
     lcd_clear();
 
     /* affichage */
+    lcd_set_cursor(2, 2);
     lcd_message(argv[1]);
+
+
 
     /* Release the GPIO memory mapping */
     gpio_teardown();

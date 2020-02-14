@@ -1,7 +1,7 @@
 # changer les valeurs par défaut de RPI et DIR
-RPI?=20
-DIR?=binome
-APP=lcd_user
+RPI?=24
+DIR?=mabed_peugnet
+APP=MPlcd_user
 
 CFLAGS=-Wall -Wfatal-errors -O2
 LDFLAGS=-static -L$(LIB) -lgpio
