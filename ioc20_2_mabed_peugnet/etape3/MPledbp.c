@@ -60,6 +60,14 @@ static void gpio_write(int pin, int val)
     else
         gpio_regs->gpclr[pin / 32] = (1 << (pin % 32));
 }
+static int gpio_read (int pin)
+{
+    int reg = pin / 32;
+    int bit = pin % 32;
+    int mask = 1;
+    int val = gpio_regs->gpset[reg] >> bit & mask;
+    return val;
+}
 
 //////////////////////////////// fops //////////////////////////////////////
 
@@ -68,12 +76,19 @@ static int major;
 static int 
 open_ledbp(struct inode *inode, struct file *file) {
     printk(KERN_DEBUG "MPopen()\n");
+    gpio_fsel(leds[0], GPIO_FSEL_OUTPUT);
+    gpio_fsel(leds[1], GPIO_FSEL_OUTPUT);
+    gpio_fsel(btn, GPIO_FSEL_INPUT);
     return 0;
 }
 
 static ssize_t 
 read_ledbp(struct file *file, char *buf, size_t count, loff_t *ppos) {
     printk(KERN_DEBUG "MPread()\n");
+    int val = gpio_read(btn);
+    char c = '0' + val;
+    printk(KERN_DEBUG "MP val=%d btn=%c\n", val, c);
+    buf[0] = c;
     return count;
 }
 
@@ -113,9 +128,6 @@ static int __init mon_module_init(void)
     for (i=0; i < nbled; i++)
        printk(KERN_DEBUG "MP LED %d = %d\n", i, leds[i]);
     major = register_chrdev(0, "MPledbp", &fops_ledbp); // 0 est le numéro majeur qu'on laisse choisir par linux
-    gpio_fsel(leds[0], GPIO_FSEL_OUTPUT);
-    gpio_fsel(leds[1], GPIO_FSEL_OUTPUT);
-    gpio_fsel(btn, GPIO_FSEL_INPUT);
     return 0;
 }
 

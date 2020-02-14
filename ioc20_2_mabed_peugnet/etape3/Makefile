@@ -30,6 +30,8 @@ upload:
 	scp -P622$(CARD_NUMB) $(MODULE).ko pi@$(ROUTER):$(LOGIN)/$(LAB)
 	scp -P622$(CARD_NUMB) insdev pi@$(ROUTER):$(LOGIN)/$(LAB)
 	scp -P622$(CARD_NUMB) rmdev pi@$(ROUTER):$(LOGIN)/$(LAB)
+	scp -P622$(CARD_NUMB) MPledbp.sh pi@$(ROUTER):$(LOGIN)/$(LAB)
+	scp -P622$(CARD_NUMB) main.x pi@$(ROUTER):$(LOGIN)/$(LAB)
 
 %.x: %.c
 	which $(CROSS_COMPILE)gcc
