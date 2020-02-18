@@ -1,4 +1,4 @@
-# TP3 : Pilotage d'un écran LCD en mode utilisateur et par un driver
+# IOC20 3 Mabed Peugnet : Pilotage d'un écran LCD en mode utilisateur et par un driver
 
 ## 1. Question du fichier `lcd_user.c`
 
