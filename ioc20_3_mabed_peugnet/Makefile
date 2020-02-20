@@ -2,21 +2,39 @@
 RPI?=24
 DIR?=mabed_peugnet
 APP=MPlcd_user
+ROUTER=peri
 
-CFLAGS=-Wall -Wfatal-errors -O2
+# CFLAGS=-Wall -Wfatal-errors -O2
 LDFLAGS=-static -L$(LIB) -lgpio
 
 KERNELDIR       = /dsk/l1/misc/linux-rpi-3.18.y
 CROSSDIR        = /users/enseig/franck/IOC
 CROSS_COMPILE   = $(CROSSDIR)/arm-bcm2708hardfp-linux-gnueabi/bin/bcm2708hardfp-
 
-all:  $(APP).x upload
+
+########################### module vars ###################################
+MODULE          = MPlcd
+
+obj-m           += $(MODULE).o
+
+############################# main vars ###################################
+#CFLAGS=-Wall -Wfatal-errors -O2
+LDFLAGS=-static -pthread
+
+PATH:=/users/enseig/franck/IOC/arm-bcm2708hardfp-linux-gnueabi/bin:$(PATH)
+
+############################### targets ###################################
+all:  $(APP).x
+	make -C $(KERNELDIR) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) M=$(PWD) modules
 
 $(APP).x: $(APP).c
 	$(CROSS_COMPILE)gcc -o $@ $< -I$(INC) -O2 -static
 
 upload: 
-	scp -P622$(RPI) $(APP).x pi@peri:$(DIR)
+	scp -P622$(RPI) $(APP).x pi@$(ROUTER):$(DIR)
+	scp -P622$(RPI) $(MODULE).ko pi@$(ROUTER):$(DIR)
+	scp -P622$(RPI) insdev pi@$(ROUTER):$(DIR)
+	scp -P622$(RPI) rmdev pi@$(ROUTER):$(DIR)
 
 clean:
 	rm -f *.o *.x *~
