@@ -1,7 +1,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/fs.h>
-// #include <asm/delay>
+#include <linux/delay.h>
 
 #include <asm/io.h>
 #include <mach/platform.h>
@@ -52,12 +52,14 @@ static void gpio_fsel(int pin, int fun)
     gpio_regs->gpfsel[reg] = (gpio_regs->gpfsel[reg] & ~mask) | ((fun << bit) & mask);
 }
 
-static void gpio_write(int pin, int val)
+void gpio_write(int gpio, int value)
 {
-    if (val)
-        gpio_regs->gpset[pin / 32] = (1 << (pin % 32));
+    int regnum = gpio / 32;
+    int offset = gpio % 32;
+    if (value&1)
+        gpio_regs->gpset[regnum] = (0x1 << offset);
     else
-        gpio_regs->gpclr[pin / 32] = (1 << (pin % 32));
+        gpio_regs->gpclr[regnum] = (0x1 << offset);
 }
 
 

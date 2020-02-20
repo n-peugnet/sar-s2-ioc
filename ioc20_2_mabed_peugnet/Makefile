@@ -20,13 +20,17 @@ LDFLAGS=-static -pthread
 PATH:=/users/enseig/franck/IOC/arm-bcm2708hardfp-linux-gnueabi/bin:$(PATH)
 
 ############################### targets ###################################
+.PHONY: default
 default: main.x
 	make -C $(KERNELDIR) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) M=$(PWD) modules
 
+.PHONY: clean
 clean:
 	make -C $(KERNELDIR) ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE) M=$(PWD) clean
 	rm -f *.o *.x *~ *.a
-upload:
+
+.PHONY: upload
+upload: default
 	scp -P622$(CARD_NUMB) $(MODULE).ko pi@$(ROUTER):$(LOGIN)/$(LAB)
 	scp -P622$(CARD_NUMB) insdev pi@$(ROUTER):$(LOGIN)/$(LAB)
 	scp -P622$(CARD_NUMB) rmdev pi@$(ROUTER):$(LOGIN)/$(LAB)
