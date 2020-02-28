@@ -7,17 +7,18 @@
 int startx = 0;
 int starty = 0;
 
-char *choices[] = { 
-			"Choix 1",
-			"Choix 2",
-			"Choix 3",
-			"Choix 4",
-		  };
+char *choices[] = {
+	"Choix 1",
+	"Choix 2",
+	"Choix 3",
+	"Choix 4",
+};
 int n_choices = sizeof(choices) / sizeof(char *);
 void print_menu(WINDOW *menu_win, int highlight);
 
 int main()
-{	WINDOW *menu_win;
+{
+	WINDOW *menu_win;
 	int highlight = 1;
 	int choice = 0;
 	int c;
@@ -25,7 +26,8 @@ int main()
 	initscr();
 	clear();
 	noecho();
-	cbreak();	/* Line buffering disabled. pass on everything */
+	cbreak();
+	/* Line buffering disabled. pass on everything */
 	startx = (80 - WIDTH) / 2;
 	starty = (24 - HEIGHT) / 2;
 		
@@ -35,7 +37,8 @@ int main()
 	refresh();
 	print_menu(menu_win, highlight);
 	while(1)
-	{	c = wgetch(menu_win);
+	{
+		c = wgetch(menu_win);
 		switch(c)
 		{	case KEY_UP:
 				if(highlight == 1)
@@ -46,7 +49,7 @@ int main()
 			case KEY_DOWN:
 				if(highlight == n_choices)
 					highlight = 1;
-				else 
+				else
 					++highlight;
 				break;
 			case 10:
@@ -60,7 +63,7 @@ int main()
 		print_menu(menu_win, highlight);
 		//if(choice != 0)	/* User did a choice come out of the infinite loop */
 		//	break;
-	}	
+	}
 	mvprintw(23, 0, "You chose choice %d with choice string %s\n", choice, choices[choice - 1]);
 	clrtoeol();
 	refresh();
@@ -71,13 +74,14 @@ int main()
 
 void print_menu(WINDOW *menu_win, int highlight)
 {
-	int x, y, i;	
+	int x, y, i;
 
 	x = 2;
 	y = 2;
 	box(menu_win, 0, 0);
 	for(i = 0; i < n_choices; ++i)
-	{	if(highlight == i + 1) /* High light the present choice */
+	{
+		if(highlight == i + 1) /* High light the present choice */
 		{	wattron(menu_win, A_REVERSE); 
 			mvwprintw(menu_win, y, x, "%s", choices[i]);
 			wattroff(menu_win, A_REVERSE);
