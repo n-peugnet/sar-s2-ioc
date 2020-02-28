@@ -16,4 +16,4 @@ On l'ajoute ensuite au Makefile afin que tout se link correctement.
 
 ## Etape 3
 
-On ajoute au serveur le moyen de compter le nombre de vote pour chaque choix.
+On ajoute au serveur le moyen de compter le nombre de vote pour chaque choix avec un array de int.
