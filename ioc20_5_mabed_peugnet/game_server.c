@@ -2,10 +2,50 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+
+#define NB_CARDS 100
+
+struct dist_card {
+	int card_val;
+	int player_sock;
+};
+
+int cards[NB_CARDS];
+
+void cards_init(int *cards) {
+	int i;
+	for (i = 0; i < NB_CARDS; i++)
+	{
+		cards[i] = i + 1;
+	}
+}
+
+void cards_shuffle(int *cards, int iter) {
+	int i, a, b, tmp_card;
+	srand(time (NULL));
+	for (i = 0; i < iter; i++)
+	{
+		a = rand() % NB_CARDS;
+		b = rand() % NB_CARDS;
+		tmp_card = cards[a];
+		cards[a] = cards[b];
+		cards[b] = tmp_card;
+	}
+}
+
+void cards_print(int *cards) {
+	int i;
+	for (i = 0; i < NB_CARDS; i++)
+	{
+		printf("%d ", cards[i]);
+	}
+	printf("\n");
+}
 
 void error(const char *msg)
 {
@@ -61,6 +101,10 @@ int main(int argc, char *argv[])
 	socklen_t clilen;
 	struct sockaddr_in serv_addr, cli_addr;
 	int n;
+
+	cards_init(cards);
+	cards_shuffle(cards, 1000);
+	cards_print(cards);
 
 	// Le client doit connaitre l'adresse IP du serveur, et son numero de port
 	if (argc < 2) {
