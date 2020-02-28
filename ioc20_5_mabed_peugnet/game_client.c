@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
 		error("ERROR connecting");
 
+	send_message(sockfd, "C 0");
 	server_thread(sockfd);
 
 	// On ferme la socket

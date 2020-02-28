@@ -9,13 +9,17 @@
 #include <netdb.h>
 
 #define NB_CARDS 100
+#define NB_PLAYERS 4
 
-struct dist_card {
-	int card_val;
-	int player_sock;
+struct player {
+	int sock;
+	int card;
 };
 
 int cards[NB_CARDS];
+
+struct player players[NB_PLAYERS];
+int nb_players;
 
 void cards_init(int *cards) {
 	int i;
@@ -47,6 +51,25 @@ void cards_print(int *cards) {
 	printf("\n");
 }
 
+void cards_distribute(int *cards, struct player *players) {
+	int i;
+	for (i = 0; i < NB_PLAYERS; i++)
+	{
+		players[i].card = cards[i];
+	}
+}
+
+void players_print(struct player *players) {
+	int i;
+	printf("players:\n");
+	for (i = 0; i < NB_PLAYERS; i++)
+	{
+		printf("%d:	sock: %d\n", i, players[i].sock);
+		printf("	card: %d\n", players[i].card);
+	}
+	
+}
+
 void error(const char *msg)
 {
 	perror(msg);
@@ -60,6 +83,17 @@ int send_message(int sockfd, char *message)
 	return write(sockfd,buffer,strlen(buffer));
 }
 
+int bcast_message(int playersc, int *playersv, char *message)
+{
+	int i;
+	for (i = 0; i < playersc; i++)
+	{
+		if (!send_message(playersv[i], message)) {
+			return 0;
+		}
+	}
+	return 1;
+}
 
 void treat_message(int sockfd, char *buffer)
 {
@@ -72,8 +106,9 @@ void treat_message(int sockfd, char *buffer)
 	switch (buffer[0])
 	{
 		case 'C':
-			/* Connection request */
-			send_message(sockfd, "to change");
+			players[nb_players++].sock = sockfd;
+			players_print(players);
+			send_message(sockfd, "C 0");
 			break;
 		case 'P':
 			/* Card played request */
@@ -106,7 +141,6 @@ int main(int argc, char *argv[])
 	cards_shuffle(cards, 1000);
 	cards_print(cards);
 
-	// Le client doit connaitre l'adresse IP du serveur, et son numero de port
 	if (argc < 2) {
 		fprintf(stderr,"usage %s port\n", argv[0]);
 		exit(0);
