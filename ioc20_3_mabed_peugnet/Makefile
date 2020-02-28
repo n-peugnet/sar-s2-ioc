@@ -1,5 +1,5 @@
 # changer les valeurs par défaut de RPI et DIR
-RPI?=25
+RPI?=26
 DIR?=mabed_peugnet
 APP=MPlcd_user
 ROUTER=peri

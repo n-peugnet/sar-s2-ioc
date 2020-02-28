@@ -263,7 +263,7 @@ int main(int argc, char **argv)
     lcd_clear();
 
     /* affichage */
-    lcd_set_cursor(2, 2);
+    lcd_set_cursor(0,0);
     lcd_message(argv[1]);
 
 

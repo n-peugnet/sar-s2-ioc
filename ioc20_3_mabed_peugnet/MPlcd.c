@@ -3,6 +3,7 @@
 #include <linux/fs.h>
 #include <linux/delay.h>
 
+#include <asm/delay.h>
 #include <asm/io.h>
 #include <mach/platform.h>
 
