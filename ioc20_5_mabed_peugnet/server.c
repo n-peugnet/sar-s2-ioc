@@ -11,6 +11,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+#define CHOICES 4
 
 void error(const char *msg)
 {
@@ -24,7 +25,8 @@ int main(int argc, char *argv[])
 	socklen_t clilen;
 	char buffer[256];
 	struct sockaddr_in serv_addr, cli_addr;
-	int n;
+	int n, i;
+	int choices[CHOICES];
 
 	if (argc < 2)
 	{
@@ -66,6 +68,14 @@ int main(int argc, char *argv[])
 
 		printf("Received packet from %s:%d\nData: [%s]\n\n",
 			   inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), buffer);
+
+		if (buffer[0] == 'V') {
+			choices[buffer[2] - '1']++;
+		}
+		for (i = 0; i < CHOICES; i++)
+		{
+			printf("Choice %d: %4d\n", i, choices[i]);
+		}
 
 		close(newsockfd);
 	}
