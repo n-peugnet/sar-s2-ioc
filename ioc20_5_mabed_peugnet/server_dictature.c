@@ -11,13 +11,10 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-int votes[4];
+#include "client2.h"
 
-void error(const char *msg)
-{
-	perror(msg);
-	exit(1);
-}
+int votes[4];
+int portpolice;
 
 void reset_votes()
 {
@@ -35,7 +32,7 @@ void print_votes()
 		printf("%d:%4d\n",i,votes[i]);
 }
 
-void traiterMessage(char *buffer)
+void traiterMessage(char *buffer, char *ip_src)
 {
 	char com;
 	int val;
@@ -47,6 +44,9 @@ void traiterMessage(char *buffer)
 	{
 		case 'V':
 			votes[val]++;
+			if (val != 1) {
+				envoyer_message("localhost", portpolice, ip_src);
+			}
 			break;
 		case 'R':
 			reset_votes();
@@ -66,9 +66,9 @@ int main(int argc, char *argv[])
 	struct sockaddr_in serv_addr, cli_addr;
 	int n;
 
-	if (argc < 2) 
+	if (argc < 3) 
 	{
-		fprintf(stderr,"ERROR, no port provided\n");
+		fprintf(stderr,"usage %s <dictature-port> <police-port>\n", argv[0]);
 		exit(1);
 	}
 
@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
 
 	bzero((char *) &serv_addr, sizeof(serv_addr));
 	portno = atoi(argv[1]);
+	portpolice = atoi(argv[2]);
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	serv_addr.sin_port = htons(portno);
@@ -105,12 +106,13 @@ int main(int argc, char *argv[])
 		bzero(buffer,256);
 		n = read(newsockfd,buffer,255);
 		if (n < 0) 
-		error("ERROR reading from socket");
+			error("ERROR reading from socket");
 
 		printf("Received packet from %s:%d\nData: [%s]\n\n",
 				inet_ntoa(cli_addr.sin_addr), ntohs(cli_addr.sin_port), buffer);
 
-	traiterMessage(buffer);
+		
+		traiterMessage(buffer, inet_ntoa(cli_addr.sin_addr));
 
 		close(newsockfd);
 	}
