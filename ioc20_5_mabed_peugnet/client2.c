@@ -13,32 +13,24 @@ void error(const char *msg)
 	exit(0);
 }
 
-int main(int argc, char *argv[])
+int envoyer_message(char *hostname, int portno, char *message)
 {
-	int sockfd, portno, n;
+	int sockfd, n;
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 
 	char buffer[256];
 
-	// Le client doit connaitre l'adresse IP du serveur, et son numero de port
-	if (argc < 4) {
-		fprintf(stderr,"usage %s hostname port message\n", argv[0]);
-		exit(0);
-	}
-
-	portno = atoi(argv[2]);
 	// 1) Création de la socket, INTERNET et TCP
-
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (sockfd < 0) 
 		error("ERROR opening socket");
 	
-	server = gethostbyname(argv[1]);
+	server = gethostbyname(hostname);
 	if (server == NULL) {
 		fprintf(stderr,"ERROR, no such host\n");
-		exit(0);
+		return 0;
 	}
 
 	// On donne toutes les infos sur le serveur
@@ -53,12 +45,32 @@ int main(int argc, char *argv[])
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
 		error("ERROR connecting");
 
-	sprintf(buffer,"%s\n",argv[3]);
+	sprintf(buffer,"%s\n", message);
 
 	n = write(sockfd,buffer,strlen(buffer));
 
 	// On ferme la socket
 
 	close(sockfd);
+	return n;
+}
+
+int main(int argc, char *argv[])
+{
+	int portno;
+	char *hostname;
+	char *message;
+
+	// Le client doit connaitre l'adresse IP du serveur, et son numero de port
+	if (argc < 4) {
+		fprintf(stderr,"usage %s hostname port message\n", argv[0]);
+		exit(0);
+	}
+
+	hostname = argv[1];
+	portno = atoi(argv[2]);
+	message = argv[3];
+
+	envoyer_message(hostname, portno, message);
 	return 0;
 }
