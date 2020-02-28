@@ -54,23 +54,3 @@ int envoyer_message(char *hostname, int portno, char *message)
 	close(sockfd);
 	return n;
 }
-
-int main(int argc, char *argv[])
-{
-	int portno;
-	char *hostname;
-	char *message;
-
-	// Le client doit connaitre l'adresse IP du serveur, et son numero de port
-	if (argc < 4) {
-		fprintf(stderr,"usage %s hostname port message\n", argv[0]);
-		exit(0);
-	}
-
-	hostname = argv[1];
-	portno = atoi(argv[2]);
-	message = argv[3];
-
-	envoyer_message(hostname, portno, message);
-	return 0;
-}

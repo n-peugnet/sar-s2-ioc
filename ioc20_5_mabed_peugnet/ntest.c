@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <ncurses.h>
+#include "client2.h"
 
 #define WIDTH 30
 #define HEIGHT 10 
@@ -16,12 +18,23 @@ char *choices[] = {
 int n_choices = sizeof(choices) / sizeof(char *);
 void print_menu(WINDOW *menu_win, int highlight);
 
-int main()
+int main(int argc, char *argv[])
 {
 	WINDOW *menu_win;
 	int highlight = 1;
 	int choice = 0;
 	int c;
+
+	char *hostname;
+	int portno;
+
+	// Le client doit connaitre l'adresse IP du serveur, et son numero de port
+	if (argc < 3) {
+		fprintf(stderr,"usage %s hostname port\n", argv[0]);
+		exit(0);
+	}
+	hostname = argv[1];
+	portno = atoi(argv[2]);
 
 	initscr();
 	clear();
@@ -54,6 +67,9 @@ int main()
 				break;
 			case 10:
 				choice = highlight;
+				char buff[5];
+				sprintf(buff, "V %d\n", choice);
+				envoyer_message(hostname, portno, buff);
 				break;
 			default:
 				mvprintw(24, 0, "Character pressed is = %3d Hopefully it can be printed as '%c'", c, c);
