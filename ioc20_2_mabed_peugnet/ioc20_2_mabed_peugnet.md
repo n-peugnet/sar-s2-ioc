@@ -1,6 +1,8 @@
 
 # IOC20 2 Mabed Peugnet : Pilote de périphérique simple
 
+Sujet: <https://www-soc.lip6.fr/trac/sesi-peri/wiki/IOC20_T02>
+
 ## Etape 1
 
 ### Question
