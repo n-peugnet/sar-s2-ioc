@@ -142,7 +142,7 @@ void loop_Oled(struct Oled_st * ctx, struct mailbox0 *mb) {
   display.setCursor(0, 0);
 
   if (mb->state != FULL) return;                          //On attend que la boîte soit pleine
-  int valeur=map(mb->val,0,1023,0,100);                   //On lit la valeur relevée par la photorésistance et l'adopte à notre besoin de l'afficher en pourcentage avec map 
+  int valeur=map(mb->val, 50, 900, 0, 100);               //On lit la valeur relevée par la photorésistance et l'adopte à notre besoin de l'afficher en pourcentage avec map 
   display.print(valeur);                                  //Affichage du pourcentage de luminosité reçu par la photorésistance
   display.println("%"); 
   mb->state = EMPTY;
